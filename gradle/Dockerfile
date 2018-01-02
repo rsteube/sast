@@ -8,5 +8,5 @@ ADD app /app
 ENV OWASP_VERSION 3.0.2
 
 RUN cd /app \
- && sed -ri "s_OWASP_VERSION_${OWASP_VERSION}_" \
+ && sed -i "s/OWASP_VERSION/$OWASP_VERSION/" build.gradle \
  && gradle --no-daemon dependencyCheckUpdate
