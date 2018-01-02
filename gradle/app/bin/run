@@ -1,0 +1,13 @@
+#!/bin/sh
+set -e
+
+cd $1
+
+sed -i "1iplugins { id 'org.owasp.dependencycheck' version '${OWASP_VERSION}' }" build.gradle
+echo -e "\ndependencyCheck { format='json' }" >> build.gradle
+
+excluded=$(gradle tasks --all | grep -o '^[^- ]\+ -' | tr -d ' -' | grep -v dependencyCheckAggregate | sed 's_^_-x _' | tr '\n' ' ')
+eval gradle $excluded --no-daemon dependencyCheckAggregate
+
+jq -f /app/owasp.jq build/reports/dependency-check-report.json > gl-sast-report.json
+
